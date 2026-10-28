@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from enum import StrEnum
+
+class ItemName(StrEnum):
+    AGED_BRIE = "Aged Brie"
+    SULFURAS = "Sulfuras, Hand of Ragnaros"
+    BACKSTAGE = "Backstage passes to a TAFKAL80ETC concert"
+
+
 class GildedRose(object):
 
     def __init__(self, items):
