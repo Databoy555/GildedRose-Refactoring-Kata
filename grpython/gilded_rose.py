@@ -40,7 +40,8 @@ class GildedRose(object):
                 if item.quality > 0:
                     item.quality = item.quality - 1
 
-
+            # This line is problematic as it changes update behaviour mid run
+            # Either update sell in at start or at end
             item.sell_in = item.sell_in - 1
 
             # Block dealing with after sell by
@@ -55,9 +56,7 @@ class GildedRose(object):
                 elif item.quality > 0:
                     item.quality = item.quality - 1
 
-            item.quality = min(QUALITY_MAX, item.quality)
-            item.quality = max(0, item.quality)
-
+            item.quality = max(0, min(QUALITY_MAX, item.quality))
 
 
 class Item:
