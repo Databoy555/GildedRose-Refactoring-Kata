@@ -37,16 +37,19 @@ class GildedRose(object):
                 item.sell_in = item.sell_in - 1
 
             if item.sell_in < 0:
-                if item.name != "Aged Brie":
-                    if item.name != "Backstage passes to a TAFKAL80ETC concert":
-                        if item.quality > 0:
-                            if item.name != "Sulfuras, Hand of Ragnaros":
-                                item.quality = item.quality - 1
-                    else:
-                        item.quality = item.quality - item.quality
+                if item.name == ItemName.SULFURAS:
+                    continue
 
-                elif (item.name == ItemName.AGED_BRIE) & (item.quality < QUALITY_MAX):
+                elif item.name == ItemName.AGED_BRIE:
+                    if item.quality < QUALITY_MAX:
                         item.quality = item.quality + 1
+
+                elif item.name == ItemName.BACKSTAGE:
+                    item.quality = 0
+
+                elif item.quality > 0:
+                    item.quality = item.quality - 1
+
 
 
 class Item:
