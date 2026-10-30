@@ -29,8 +29,9 @@ def test_foo():
     assert items[0].name == "foo"
 
 def test_foo2(make_item_and_add_to_gilded_rose):
-    items = make_item_and_add_to_gilded_rose("foo", 0, 0)
-    assert items[0].name == "foo"
+    gilded_rose = make_item_and_add_to_gilded_rose("foo", 0, 0)
+    gilded_rose.update_quality()
+    assert gilded_rose.items[0].name == "foo"
 
 
 def test_items_have_attributes():
@@ -64,7 +65,6 @@ def test_quality_twice_degrade(make_item):
     assert item[0].quality == 8
 
 
-
 def test_quality_max(make_item):
     item = make_item(ItemName.AGED_BRIE, 5, 50)
     gilded_rose = GildedRose(item)
@@ -78,6 +78,17 @@ def test_aged_brie(make_item):
     gilded_rose.update_quality()
     assert item[0].sell_in == 4
     assert item[0].quality == 11
+
+
+def test_aged_brie_past(make_item):
+    """
+    Aged brie improves twice as fast after sell by
+    """
+    item = make_item(ItemName.AGED_BRIE, -1, 10)
+    gilded_rose = GildedRose(item)
+    gilded_rose.update_quality()
+    assert item[0].sell_in == -2
+    assert item[0].quality == 12
 
 
 def test_surphuras(make_item_and_add_to_gilded_rose):
@@ -96,6 +107,12 @@ def test_backstage_passes(make_item_and_add_to_gilded_rose):
     assert gilded_rose.items[0].sell_in == 4
     assert gilded_rose.items[0].quality == 15
 
+def test_backstage_after_sellby(make_item_and_add_to_gilded_rose):
+    gilded_rose = make_item_and_add_to_gilded_rose(ItemName.BACKSTAGE, 0, 10)
+    gilded_rose.update_quality()
+    assert gilded_rose.items[0].sell_in == -1
+    assert gilded_rose.items[0].quality == 0
+
 
 def test_multiple_items():
     items = [Item("foo", 10, 10), Item(ItemName.AGED_BRIE, 4, 0)]
@@ -105,3 +122,7 @@ def test_multiple_items():
     assert gilded_rose.items[0].quality == 9
     assert gilded_rose.items[1].sell_in == 3
     assert gilded_rose.items[1].quality == 1
+
+# Run all tests
+if __name__ == '__main__':
+    pytest.main([__file__])
