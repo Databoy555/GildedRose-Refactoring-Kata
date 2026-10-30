@@ -22,28 +22,24 @@ class GildedRose(object):
             if item.name == ItemName.SULFURAS:
                 continue
 
-            if item.name == ItemName.BACKSTAGE:
-                if item.sell_in >= 11:
-                    item.quality = item.quality + 1
+            elif item.name == ItemName.AGED_BRIE:
+                item.quality = item.quality + 1
 
-                if item.sell_in < 11:
-                    if item.quality < QUALITY_MAX:
-                        item.quality = min(50, item.quality + 2)
-
+            elif item.name == ItemName.BACKSTAGE:
+                # Max is applied later and after sellby zeroing also done later
                 if item.sell_in < 6:
-                    if item.quality < QUALITY_MAX:
-                        item.quality = item.quality + 1
+                    item.quality += 3
 
+                elif item.sell_in < 11:
+                    item.quality +=  2
 
-            elif item.name != "Aged Brie" and item.name != ItemName.BACKSTAGE:
+                else:
+                    item.quality += 1
+
+            else:
                 if item.quality > 0:
                     item.quality = item.quality - 1
 
-            else:
-                if item.quality < QUALITY_MAX:
-                    item.quality = item.quality + 1
-
-                    # Block deals with Backstage pass, after sell by is zeroed later
 
             item.sell_in = item.sell_in - 1
 
@@ -51,13 +47,16 @@ class GildedRose(object):
             # The double reduction comes because previous block also reduces once
             if item.sell_in < 0:
                 if item.name == ItemName.AGED_BRIE:
-                    item.quality = min(50, item.quality + 1)
+                    item.quality = item.quality + 1
 
                 elif item.name == ItemName.BACKSTAGE:
                     item.quality = 0
 
                 elif item.quality > 0:
                     item.quality = item.quality - 1
+
+            item.quality = min(QUALITY_MAX, item.quality)
+            item.quality = max(0, item.quality)
 
 
 
