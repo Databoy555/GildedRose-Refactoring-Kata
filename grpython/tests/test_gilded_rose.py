@@ -79,6 +79,13 @@ def test_quality_max_after_sellby(make_item):
     assert item[0].sell_in == -2
     assert item[0].quality == 50
 
+def test_quality_max_after_sellby_backstage(make_item):
+    item = make_item(ItemName.AGED_BRIE, 3, 49)
+    gilded_rose = GildedRose(item)
+    gilded_rose.update_quality()
+    assert item[0].sell_in == 2
+    assert item[0].quality == 50
+
 def test_aged_brie(make_item):
     item = make_item(ItemName.AGED_BRIE, 5, 10)
     gilded_rose = GildedRose(item)
