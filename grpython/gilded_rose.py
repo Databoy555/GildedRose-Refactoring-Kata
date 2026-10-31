@@ -22,15 +22,22 @@ class GildedRose(object):
             if item.name == ItemName.SULFURAS:
                 continue
 
-            elif item.name == ItemName.AGED_BRIE:
+            item.sell_in = item.sell_in - 1
+
+            if item.name == ItemName.AGED_BRIE:
                 item.quality = item.quality + 1
 
             elif item.name == ItemName.BACKSTAGE:
                 # Max is applied later and after sellby zeroing also done later
-                if item.sell_in < 6:
+                # Based on the tests, 5 days or less relates to update at end of day label 5
+                # If we move the sell in days update to the start of the script then we need
+                # to update this so += 3 is for day <= 4 (day zero is counted),
+                # +=3 for days <= 9
+
+                if item.sell_in <= 4:
                     item.quality += 3
 
-                elif item.sell_in < 11:
+                elif item.sell_in <= 9:
                     item.quality +=  2
 
                 else:
@@ -42,7 +49,10 @@ class GildedRose(object):
 
             # This line is problematic as it changes update behaviour mid run
             # Either update sell in at start or at end
-            item.sell_in = item.sell_in - 1
+
+            # Today 0
+            # EOD -1
+            # So essentially we can do this before and handle case
 
             # Block dealing with after sell by
             # The double reduction comes because previous block also reduces once
