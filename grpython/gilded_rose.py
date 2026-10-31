@@ -24,7 +24,7 @@ class GildedRose(object):
 
             item.sell_in = item.sell_in - 1
 
-# Now we update the qualities for rest
+            # Now we update the qualities for rest
             if item.name == ItemName.AGED_BRIE:
                 item.quality = item.quality + 1
 
@@ -57,7 +57,7 @@ class GildedRose(object):
                 if item.sell_in < 0:
                     item.quality = item.quality - 1
 
-            item.quality = max(0, min(QUALITY_MAX, item.quality))
+            item.perform_min_max_checks()
 
 
 class Item:
@@ -65,6 +65,10 @@ class Item:
         self.name = name
         self.sell_in = sell_in
         self.quality = quality
+
+    # Could convert this into property
+    def perform_min_max_checks(self):
+        self.quality = max(0, min(QUALITY_MAX, self.quality))
 
     def __repr__(self):
         return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
