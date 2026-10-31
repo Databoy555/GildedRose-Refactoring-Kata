@@ -47,12 +47,7 @@ class GildedRose(object):
                 if item.quality > 0:
                     item.quality = item.quality - 1
 
-            # This line is problematic as it changes update behaviour mid run
-            # Either update sell in at start or at end
-
-            # Today 0
-            # EOD -1
-            # So essentially we can do this before and handle case
+            # Lets put logic by item type so we can move to item based logic
 
             # Block dealing with after sell by
             # The double reduction comes because previous block also reduces once
