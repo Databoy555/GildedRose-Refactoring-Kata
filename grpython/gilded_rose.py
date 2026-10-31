@@ -12,16 +12,6 @@ class ItemName(StrEnum):
     SULFURAS = "Sulfuras, Hand of Ragnaros"
     BACKSTAGE = "Backstage passes to a TAFKAL80ETC concert"
 
-class generic_accountant():
-    def __init__(self, item):
-        self.item = item
-
-    def update_quality(self):
-        self.item.quality -= 1
-
-        if self.item.sell_in < 0:
-            self.item.quality -= 1
-
 
 
 class GildedRose(object):
@@ -37,34 +27,15 @@ class GildedRose(object):
 
             # Now we update the qualities for rest
             if item.name == ItemName.AGED_BRIE:
-                item.quality = item.quality + 1
-
-                if item.sell_in < 0:
-                    item.quality = item.quality + 1
-
+                acc = BrieAccountant(item)
 
             elif item.name == ItemName.BACKSTAGE:
-                # Max is applied later and after sellby zeroing also done later
-                # Based on the tests, 5 days or less relates to update at end of day label 5
-                # If we move the sell in days update to the start of the script then we need
-                # to update this so += 3 is for day <= 4 (day zero is counted),
-                # +=3 for days <= 9
-                if item.sell_in < 0:
-                    item.quality = 0
-
-                elif item.sell_in <= 4:
-                    item.quality += 3
-
-                elif item.sell_in <= 9:
-                    item.quality +=  2
-
-                else:
-                    item.quality += 1
+                acc = BackstageAccountant(item)
 
             else: # Other items
-                ga = generic_accountant(item)
-                ga.update_quality()
+                acc = GenericAccountant(item)
 
+            acc.update_quality()
             item.perform_min_max_checks()
 
 
@@ -82,3 +53,47 @@ class Item:
         return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
 
 
+class Accountant(ABC):
+    def __init__(self, item):
+        self.item = item
+
+    @abstractmethod
+    def update_quality(self):
+        pass
+
+
+class GenericAccountant(Accountant):
+    def update_quality(self):
+        self.item.quality -= 1
+
+        if self.item.sell_in < 0:
+            self.item.quality -= 1
+
+
+class BrieAccountant(Accountant):
+    def update_quality(self):
+        self.item.quality = self.item.quality + 1
+
+        if self.item.sell_in < 0:
+            self.item.quality = self.item.quality + 1
+
+
+class BackstageAccountant(Accountant):
+    def update_quality(self):
+        # Max is applied later and after sellby zeroing also done later
+        # Based on the tests, 5 days or less relates to update at end of day label 5
+        # If we move the sell in days update to the start of the script then we need
+        # to update this so += 3 is for day <= 4 (day zero is counted),
+        # +=3 for days <= 9
+        item = self.item
+        if item.sell_in < 0:
+            item.quality = 0
+
+        elif item.sell_in <= 4:
+            item.quality += 3
+
+        elif item.sell_in <= 9:
+            item.quality += 2
+
+        else:
+            item.quality += 1
