@@ -2,6 +2,7 @@
 
 from enum import StrEnum
 from typing import List
+from abc import ABC, abstractmethod
 
 
 QUALITY_MAX = 50
@@ -10,6 +11,16 @@ class ItemName(StrEnum):
     AGED_BRIE = "Aged Brie"
     SULFURAS = "Sulfuras, Hand of Ragnaros"
     BACKSTAGE = "Backstage passes to a TAFKAL80ETC concert"
+
+class generic_accountant():
+    def __init__(self, item):
+        self.item = item
+
+    def update_quality(self):
+        self.item.quality -= 1
+
+        if self.item.sell_in < 0:
+            self.item.quality -= 1
 
 
 
@@ -51,11 +62,8 @@ class GildedRose(object):
                     item.quality += 1
 
             else: # Other items
-                if item.quality > 0:
-                    item.quality = item.quality - 1
-
-                if item.sell_in < 0:
-                    item.quality = item.quality - 1
+                ga = generic_accountant(item)
+                ga.update_quality()
 
             item.perform_min_max_checks()
 
