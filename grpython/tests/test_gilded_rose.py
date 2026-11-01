@@ -106,10 +106,10 @@ def test_aged_brie_past(make_item):
 
 
 def test_surphuras(make_item_and_add_to_gilded_rose):
-    gilded_rose = make_item_and_add_to_gilded_rose(ItemName.SULFURAS, 10, 10)
+    gilded_rose = make_item_and_add_to_gilded_rose(ItemName.SULFURAS, 10, 80)
     gilded_rose.update_quality()
     assert gilded_rose.items[0].sell_in == 10
-    assert gilded_rose.items[0].quality == 10
+    assert gilded_rose.items[0].quality == 80
 
 
 def test_backstage_passes(make_item_and_add_to_gilded_rose):

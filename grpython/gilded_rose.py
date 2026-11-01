@@ -20,9 +20,6 @@ class GildedRose(object):
 
     def update_quality(self):
         for item in self.items:
-            if item.name == ItemName.SULFURAS:
-                continue
-
             acc = Accountant.assign_accountant(item)
 
             acc.perform_daily_update()
@@ -128,4 +125,7 @@ class SulfurasAccountant(Accountant):
         pass
 
     def update_quality(self):
+        pass
+
+    def perform_min_max_checks(self):
         pass
