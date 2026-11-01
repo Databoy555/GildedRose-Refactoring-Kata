@@ -139,7 +139,17 @@ def test_multiple_items():
 
 
 def test_conjured_items():
-    gilded_rose = make_item_and_add_to_gilded_rose([ItemName.CONJURED])
+    items = [Item(ItemName.CONJURED, 10, 10),
+             Item(ItemName.CONJURED, 0, 10),
+             Item(ItemName.CONJURED, 10, 0)]
+    gilded_rose = GildedRose(items)
+    gilded_rose.update_quality()
+    assert gilded_rose.items[0].sell_in == 9
+    assert gilded_rose.items[0].quality == 8
+    assert gilded_rose.items[1].sell_in == -1
+    assert gilded_rose.items[1].quality == 6
+    assert gilded_rose.items[2].sell_in == 9
+    assert gilded_rose.items[2].quality == 0
 
 # Run all tests
 if __name__ == '__main__':
