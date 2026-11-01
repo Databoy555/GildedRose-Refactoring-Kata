@@ -23,15 +23,7 @@ class GildedRose(object):
             if item.name == ItemName.SULFURAS:
                 continue
 
-            # Now we update the qualities for rest
-            if item.name == ItemName.AGED_BRIE:
-                acc = BrieAccountant(item)
-
-            elif item.name == ItemName.BACKSTAGE:
-                acc = BackstageAccountant(item)
-
-            else: # Other items
-                acc = GenericAccountant(item)
+            acc = Accountant.assign_accountant(item)
 
             acc.perform_daily_update()
             item.perform_min_max_checks()
@@ -53,8 +45,11 @@ class Item:
 
 
 class Accountant(ABC):
+    item_managed = None
+
     def __init__(self, item):
         self.item = item
+
 
     @abstractmethod
     def update_quality(self):
@@ -67,8 +62,22 @@ class Accountant(ABC):
         self.update_sell_in()
         self.update_quality()
 
+    @classmethod
+    def get_subclass_mapping(cls):
+        subclasses = cls.__subclasses__()
+        mapping = {klass.item_managed: klass for klass in subclasses}
+        return mapping
+
+    @classmethod
+    def assign_accountant(cls, item):
+        mapping = cls.get_subclass_mapping()
+        return mapping.get(item.name, GenericAccountant)(item)
+
+
 
 class GenericAccountant(Accountant):
+    item_managed = 'Generic'
+
     def update_quality(self):
         self.item.quality -= 1
 
@@ -77,6 +86,8 @@ class GenericAccountant(Accountant):
 
 
 class BrieAccountant(Accountant):
+    item_managed = ItemName.AGED_BRIE
+
     def update_quality(self):
         self.item.quality = self.item.quality + 1
 
@@ -85,6 +96,8 @@ class BrieAccountant(Accountant):
 
 
 class BackstageAccountant(Accountant):
+    item_managed = ItemName.BACKSTAGE
+
     def update_quality(self):
         # Max is applied later and after sellby zeroing also done later
         # Based on the tests, 5 days or less relates to update at end of day label 5
