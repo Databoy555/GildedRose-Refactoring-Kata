@@ -11,7 +11,7 @@ class ItemName(StrEnum):
     AGED_BRIE = "Aged Brie"
     SULFURAS = "Sulfuras, Hand of Ragnaros"
     BACKSTAGE = "Backstage passes to a TAFKAL80ETC concert"
-
+    CONJURED = "Conjured"
 
 
 class GildedRose(object):
@@ -21,7 +21,6 @@ class GildedRose(object):
     def update_quality(self):
         for item in self.items:
             acc = Accountant.assign_accountant(item)
-
             acc.perform_daily_update()
 
 
@@ -129,3 +128,4 @@ class SulfurasAccountant(Accountant):
 
     def perform_min_max_checks(self):
         pass
+

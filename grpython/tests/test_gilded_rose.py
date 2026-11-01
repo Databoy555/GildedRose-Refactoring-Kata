@@ -137,6 +137,10 @@ def test_multiple_items():
     assert gilded_rose.items[1].sell_in == 3
     assert gilded_rose.items[1].quality == 1
 
+
+def test_conjured_items():
+    gilded_rose = make_item_and_add_to_gilded_rose([ItemName.CONJURED])
+
 # Run all tests
 if __name__ == '__main__':
     pytest.main([__file__])
