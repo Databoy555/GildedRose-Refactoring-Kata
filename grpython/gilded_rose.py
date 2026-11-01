@@ -34,16 +34,15 @@ class Item:
         self.sell_in = sell_in
         self.quality = quality
 
-    # Could convert this into property
-    def perform_min_max_checks(self):
-        self.quality = max(0, min(QUALITY_MAX, self.quality))
-
     def __repr__(self):
         return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
 
 
 
 class Accountant(ABC):
+    """
+    An accountant ABC. Subclasses responsible for inventory management
+    """
     item_managed = None
 
     def __init__(self, item):
@@ -78,6 +77,9 @@ class Accountant(ABC):
 
 
 class GenericAccountant(Accountant):
+    """
+    For regular items without special rules
+    """
     item_managed = 'Generic'
 
     def update_quality(self):
@@ -101,7 +103,6 @@ class BackstageAccountant(Accountant):
     item_managed = ItemName.BACKSTAGE
 
     def update_quality(self):
-        # Max is applied later and after sellby zeroing also done later
         # Based on the tests, 5 days or less relates to update at end of day label 5
         # If we move the sell in days update to the start of the script then we need
         # to update this so += 3 is for day <= 4 (day zero is counted),
