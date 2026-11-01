@@ -23,8 +23,6 @@ class GildedRose(object):
             if item.name == ItemName.SULFURAS:
                 continue
 
-            item.sell_in = item.sell_in - 1
-
             # Now we update the qualities for rest
             if item.name == ItemName.AGED_BRIE:
                 acc = BrieAccountant(item)
@@ -35,7 +33,7 @@ class GildedRose(object):
             else: # Other items
                 acc = GenericAccountant(item)
 
-            acc.update_quality()
+            acc.perform_daily_update()
             item.perform_min_max_checks()
 
 
@@ -53,6 +51,7 @@ class Item:
         return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
 
 
+
 class Accountant(ABC):
     def __init__(self, item):
         self.item = item
@@ -60,6 +59,13 @@ class Accountant(ABC):
     @abstractmethod
     def update_quality(self):
         pass
+
+    def update_sell_in(self):
+        self.item.sell_in -= 1
+
+    def perform_daily_update(self):
+        self.update_sell_in()
+        self.update_quality()
 
 
 class GenericAccountant(Accountant):
