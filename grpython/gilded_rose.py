@@ -26,7 +26,6 @@ class GildedRose(object):
             acc = Accountant.assign_accountant(item)
 
             acc.perform_daily_update()
-            item.perform_min_max_checks()
 
 
 class Item:
@@ -50,7 +49,6 @@ class Accountant(ABC):
     def __init__(self, item):
         self.item = item
 
-
     @abstractmethod
     def update_quality(self):
         pass
@@ -58,9 +56,13 @@ class Accountant(ABC):
     def update_sell_in(self):
         self.item.sell_in -= 1
 
+    def perform_min_max_checks(self):
+        self.item.quality = max(0, min(QUALITY_MAX, self.item.quality))
+
     def perform_daily_update(self):
         self.update_sell_in()
         self.update_quality()
+        self.perform_min_max_checks()
 
     @classmethod
     def get_subclass_mapping(cls):
@@ -116,3 +118,13 @@ class BackstageAccountant(Accountant):
 
         else:
             item.quality += 1
+
+
+class SulfurasAccountant(Accountant):
+    item_managed = ItemName.SULFURAS
+
+    def update_sell_in(self):
+        pass
+
+    def update_quality(self):
+        pass
