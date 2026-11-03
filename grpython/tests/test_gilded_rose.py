@@ -2,24 +2,34 @@
 import pytest
 
 from gilded_rose import Item, GildedRose
-
-
 from gilded_rose import ItemName
+
+"""
+In theory improvements such as parameterisation and creating single comparator
+method could make test more succinct if extending but it seems to be going 
+beyond the scope of exercise, not least because texttests already exist.
+
+Explicit tests also have value. Can be discussed during interview if required.
+
+Comments added sparingly as tests should be self explanatory and comments would simply
+bloat the code. 
+"""
 
 @pytest.fixture
 def make_item():
-    def _make_item(name = 'foo', sell_in = 0, quality = 0):
+    def _make_item(name='foo', sell_in=0, quality=0):
         return [Item(name, sell_in, quality)]
+
     return _make_item
 
 
 @pytest.fixture()
 def make_item_and_add_to_gilded_rose(make_item):
-    def _make_item_and_update_once(name = 'foo', sell_in = 0, quality = 0):
+    def _make_item_and_update_once(name='foo', sell_in=0, quality=0):
         items = make_item(name, sell_in, quality)
         return GildedRose(items)
-    return _make_item_and_update_once
 
+    return _make_item_and_update_once
 
 
 def test_foo():
@@ -27,6 +37,7 @@ def test_foo():
     gilded_rose = GildedRose(items)
     gilded_rose.update_quality()
     assert items[0].name == "foo"
+
 
 def test_foo2(make_item_and_add_to_gilded_rose):
     gilded_rose = make_item_and_add_to_gilded_rose("foo", 0, 0)
@@ -50,12 +61,14 @@ def test_quality_decreases(make_item):
     assert item[0].sell_in == 0
     assert item[0].quality == 0
 
+
 def test_quality_never_below_zero(make_item):
     item = make_item("foo", 0, 0)
     gilded_rose = GildedRose(item)
     gilded_rose.update_quality()
     assert item[0].sell_in == -1
     assert item[0].quality == 0
+
 
 def test_quality_twice_degrade(make_item):
     item = make_item("foo", 0, 10)
@@ -72,6 +85,7 @@ def test_quality_max(make_item):
     assert item[0].sell_in == 4
     assert item[0].quality == 50
 
+
 def test_quality_max_after_sellby(make_item):
     item = make_item(ItemName.AGED_BRIE, -1, 50)
     gilded_rose = GildedRose(item)
@@ -79,12 +93,14 @@ def test_quality_max_after_sellby(make_item):
     assert item[0].sell_in == -2
     assert item[0].quality == 50
 
+
 def test_quality_max_after_sellby_backstage(make_item):
     item = make_item(ItemName.AGED_BRIE, 3, 49)
     gilded_rose = GildedRose(item)
     gilded_rose.update_quality()
     assert item[0].sell_in == 2
     assert item[0].quality == 50
+
 
 def test_aged_brie(make_item):
     item = make_item(ItemName.AGED_BRIE, 5, 10)
@@ -121,6 +137,7 @@ def test_backstage_passes(make_item_and_add_to_gilded_rose):
     assert gilded_rose.items[0].sell_in == 4
     assert gilded_rose.items[0].quality == 15
 
+
 def test_backstage_after_sellby(make_item_and_add_to_gilded_rose):
     gilded_rose = make_item_and_add_to_gilded_rose(ItemName.BACKSTAGE, 0, 10)
     gilded_rose.update_quality()
@@ -138,6 +155,7 @@ def test_multiple_items():
     assert gilded_rose.items[1].quality == 1
 
 
+# We could parameterise this test if extending in the future
 def test_conjured_items():
     items = [Item(ItemName.CONJURED, 10, 10),
              Item(ItemName.CONJURED, 0, 10),
@@ -151,6 +169,7 @@ def test_conjured_items():
     assert gilded_rose.items[2].sell_in == 9
     assert gilded_rose.items[2].quality == 0
 
-# Run all tests
+
+
 if __name__ == '__main__':
     pytest.main([__file__])

@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
+"""
+Keeping doc strings to a minimum as code should be self documenting
+In line comments made to explain some decisions/document behaviour
+"""
+
+from abc import ABC, abstractmethod
 from enum import StrEnum
 from typing import List
-from abc import ABC, abstractmethod
 
-
-QUALITY_MAX = 50
+QUALITY_MAX: int = 50
 
 class ItemName(StrEnum):
     AGED_BRIE = "Aged Brie"
@@ -23,7 +27,7 @@ class GildedRose(object):
             acc = Accountant.assign_accountant(item)
             acc.perform_daily_update()
 
-
+# Not adding typing here as instructions ask for no modification to Item class
 class Item:
     def __init__(self, name, sell_in, quality):
         self.name = name
@@ -32,7 +36,6 @@ class Item:
 
     def __repr__(self):
         return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
-
 
 
 class Accountant(ABC):
@@ -60,16 +63,15 @@ class Accountant(ABC):
         self.perform_min_max_checks()
 
     @classmethod
-    def get_subclass_mapping(cls):
+    def get_subclass_mapping(cls) -> dict:
         subclasses = cls.__subclasses__()
         mapping = {klass.item_managed: klass for klass in subclasses}
         return mapping
 
     @classmethod
-    def assign_accountant(cls, item):
+    def assign_accountant(cls, item) -> Accountant:
         mapping = cls.get_subclass_mapping()
         return mapping.get(item.name, GenericAccountant)(item)
-
 
 
 class GenericAccountant(Accountant):
@@ -99,10 +101,12 @@ class BackstageAccountant(Accountant):
     item_managed = ItemName.BACKSTAGE
 
     def update_quality(self):
-        # Based on the tests, 5 days or less relates to update at end of day label 5
-        # If we move the sell in days update to the start of the script then we need
-        # to update this so += 3 is for day <= 4 (day zero is counted),
-        # +=3 for days <= 9
+        """
+        Based on the tests, 5 days or less relates to update at end of day label 5
+        If we move the sell in days update to the start of the script then we need
+        to update this so += 3 is for day <= 4 (day zero is counted),
+        +=3 for days <= 9
+        """
         item = self.item
         if item.sell_in < 0:
             item.quality = 0
@@ -129,3 +133,11 @@ class SulfurasAccountant(Accountant):
     def perform_min_max_checks(self):
         pass
 
+
+class ConjuredAccountant(Accountant):
+    item_managed = ItemName.CONJURED
+
+    def update_quality(self):
+        self.item.quality -= 2
+        if self.item.sell_in < 0:
+            self.item.quality -= 2
